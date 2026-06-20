@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>websiteku</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        websiteku
+    </div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Cari video..."
+        >
+    </div>
+</header>
+
+<main>
+
+<section class="hero">
+
+<div class="video-card" data-title="Video Viral Terbaru">
+
+<video
+id="mainVideo"
+controls
+preload="metadata"
+poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
+>
+<source src="https://cdn2.sliwtdrive.com/BIYDvcux1.mp4" type="video/mp4">
+</video>
+
+<div class="btn-group">
+<button onclick="downloadVideo()">Download Video</button>
+<button onclick="playAgain()">Putar Ulang</button>
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>
