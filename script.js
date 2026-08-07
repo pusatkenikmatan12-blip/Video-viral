@@ -34,6 +34,9 @@ function playAgain() {
 // ==========================================
 // REMOTE UPLOAD (DISESUAIKAN DENGAN upload.js)
 // ==========================================
+// ==========================================
+// REMOTE UPLOAD (PAKSA LINK WEB KAMU)
+// ==========================================
 const remoteInput = document.querySelector(".remote-upload input") || document.querySelectorAll("input")[1];
 const uploadBtn = document.querySelector(".remote-upload button") || document.querySelectorAll("button")[2];
 
@@ -50,28 +53,25 @@ if (uploadBtn && remoteInput) {
     uploadBtn.disabled = true;
 
     try {
-      // Mengirim dengan parameter 'videoUrl' sesuai kodingan upload.js kamu
       const response = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoUrl: inputUrl })
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Encode URL video agar bisa dijadikan parameter link web kamu
+        // Encode URL video
         const encodedUrl = encodeURIComponent(inputUrl);
         
-        // Membuat link baru berdomain web KAMU SENDIRI
-        const myWebLink = `${window.location.origin}/?v=${encodedUrl}`;
+        // BIKIN LINK DENGAN DOMAIN WEB KAMU
+        const myWebLink = window.location.origin + "/?v=" + encodedUrl;
         
-        // Tampilkan link web kamu ke pengguna
+        // TAMPILKAN LINK WEB KAMU DI POP-UP
         prompt("Upload Berhasil! Ini link web kamu:", myWebLink);
         
-        // Memutar langsung videonya di player web
+        // Putar videonya di player
         const mainVideo = document.getElementById("mainVideo");
         if (mainVideo) {
           mainVideo.src = inputUrl;
@@ -90,19 +90,3 @@ if (uploadBtn && remoteInput) {
     }
   });
 }
-
-// ==========================================
-// AUTO PLAY JIKA WEB DIBUKA LEWAT LINK HASIL UPLOAD
-// ==========================================
-window.addEventListener("DOMContentLoaded", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const videoFromLink = urlParams.get("v");
-
-  if (videoFromLink) {
-    const mainVideo = document.getElementById("mainVideo");
-    if (mainVideo) {
-      mainVideo.src = decodeURIComponent(videoFromLink);
-      mainVideo.play();
-    }
-  }
-});
