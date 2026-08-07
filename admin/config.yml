@@ -1,0 +1,17 @@
+backend:
+  name: github
+  repo: pusatkenikmatan/Video-viral
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "posts"
+    label: "Konten"
+    folder: "content"
+    create: true
+    fields:
+      - { label: "Judul", name: "title", widget: "string" }
+      - { label: "Link / Video URL", name: "url", widget: "string" }
+      - { label: "Deskripsi", name: "body", widget: "markdown" }
