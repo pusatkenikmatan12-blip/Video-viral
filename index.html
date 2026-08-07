@@ -62,8 +62,9 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
   <p id="statusText" style="margin-top: 10px; font-weight: bold;"></p>
 </div>
 
+ 
 <script>
-async function prosesRemoteUpload() {
+  async function prosesRemoteUpload() {    const videoUrl = document.getElementById('videoUrlInput').value;async function prosesRemoteUpload() {
   const videoUrl = document.getElementById('videoUrlInput').value;
   const statusText = document.getElementById('statusText');
   const mainVideo = document.getElementById('mainVideo');
@@ -89,10 +90,17 @@ async function prosesRemoteUpload() {
     if (data.success) {
       statusText.innerText = "Berhasil dimuat!";
       
-      // Mengganti video di player dan memutarnya
-      mainVideo.src = videoUrl;
-      mainVideo.load();
-      mainVideo.play();
+      // --- PERBAIKAN DI SINI ---
+      // Cari elemen <source> di dalam video, atau pasang src langsung
+      let sourceElement = mainVideo.querySelector('source');
+      if (sourceElement) {
+        sourceElement.src = videoUrl;
+      } else {
+        mainVideo.src = videoUrl;
+      }
+      
+      mainVideo.load(); // Reload pemutar video
+      mainVideo.play().catch(e => console.log("Autoplay diblokir browser:", e));
 
     } else {
       statusText.innerText = "Gagal: " + data.message;
