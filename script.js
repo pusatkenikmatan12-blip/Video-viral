@@ -15,10 +15,10 @@ videoCard.style.display = "none";
 });
 
 function downloadVideo(){
-window.open(
-"https://cdn2.sliwtdrive.com/BIYDvcux1.mp4",
-"_blank"
-);
+  window.open(
+    "https://video-viral-swart.vercel.app", // <--- Ganti dengan domain/link web kamu
+    "_blank"
+  );
 }
 
 function playAgain(){
