@@ -32,13 +32,14 @@ function playAgain() {
 }
 
 // ==========================================
-// REMOTE UPLOAD (DISESUAIKAN DENGAN upload.js)
-// ==========================================
-// ==========================================
-// REMOTE UPLOAD (PAKSA LINK WEB KAMU)
+// REMOTE UPLOAD (PASTIIN MASUK KE KOTAK HASIL DOMAIN KAMU)
 // ==========================================
 const remoteInput = document.querySelector(".remote-upload input") || document.querySelectorAll("input")[1];
 const uploadBtn = document.querySelector(".remote-upload button") || document.querySelectorAll("button")[2];
+
+// Mengambil elemen tempat nampilin link di bawah "Link Video Kamu:"
+const resultInput = document.querySelector("#resultLink") || document.querySelectorAll("input")[2]; 
+const resultContainer = document.querySelector("#resultContainer") || document.querySelector(".result-box");
 
 if (uploadBtn && remoteInput) {
   uploadBtn.addEventListener("click", async () => {
@@ -65,13 +66,20 @@ if (uploadBtn && remoteInput) {
         // Encode URL video
         const encodedUrl = encodeURIComponent(inputUrl);
         
-        // BIKIN LINK DENGAN DOMAIN WEB KAMU
+        // BIKIN LINK BERDOMAIN WEB KAMU SENDIRI
         const myWebLink = window.location.origin + "/?v=" + encodedUrl;
         
-        // TAMPILKAN LINK WEB KAMU DI POP-UP
-        prompt("Upload Berhasil! Ini link web kamu:", myWebLink);
+        // TEMPELKAN KE KOTAK INPUT HASIL (Bawah "Link Video Kamu:")
+        if (resultInput) {
+          resultInput.value = myWebLink;
+        }
         
-        // Putar videonya di player
+        // Tampilkan kontainer hasil jika tadinya tersembunyi
+        if (resultContainer) {
+          resultContainer.style.display = "block";
+        }
+
+        // Putar videonya di player atas
         const mainVideo = document.getElementById("mainVideo");
         if (mainVideo) {
           mainVideo.src = inputUrl;
