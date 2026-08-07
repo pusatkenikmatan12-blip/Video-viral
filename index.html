@@ -54,6 +54,47 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
 </main>
 
 <script src="script.js"></script>
+<!-- Form Remote Upload -->
+<div style="max-width: 400px; margin: 20px auto; text-align: center; font-family: sans-serif;">
+  <h3>Remote Upload Video</h3>
+  <input type="text" id="videoUrlInput" placeholder="Masukkan URL Direct Video (.mp4)" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+  <button onclick="prosesRemoteUpload()" style="padding: 8px 16px; cursor: pointer;">Upload Sekarang</button>
+  <p id="statusText" style="margin-top: 10px; font-weight: bold;"></p>
+</div>
+
+<script>
+async function prosesRemoteUpload() {
+  const videoUrl = document.getElementById('videoUrlInput').value;
+  const statusText = document.getElementById('statusText');
+
+  if(!videoUrl) {
+    statusText.innerText = "Masukkan link video dulu!";
+    return;
+  }
+
+  statusText.innerText = "Sedang memproses video...";
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ videoUrl: videoUrl })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      statusText.innerText = "Berhasil! Ukuran: " + data.size + " bytes";
+    } else {
+      statusText.innerText = "Gagal: " + data.message;
+    }
+  } catch (err) {
+    statusText.innerText = "Terjadi kesalahan koneksi.";
+  }
+}
+</script>
 
 </body>
 </html>
