@@ -32,69 +32,81 @@ function playAgain() {
 }
 
 // ==========================================
-// REMOTE UPLOAD (PASTIIN MASUK KE KOTAK HASIL DOMAIN KAMU)
+// REMOTE UPLOAD & AUTO-FILL LINK WEB KAMU
 // ==========================================
-const remoteInput = document.querySelector(".remote-upload input") || document.querySelectorAll("input")[1];
-const uploadBtn = document.querySelector(".remote-upload button") || document.querySelectorAll("button")[2];
+document.addEventListener("DOMContentLoaded", () => {
+  const remoteInput = document.querySelectorAll("input")[1] || document.querySelector(".remote-upload input");
+  const uploadBtn = document.querySelectorAll("button")[2] || document.querySelector(".remote-upload button");
+  
+  // Mengambil input kotak hasil bawah & tombol copy
+  const resultInput = document.querySelectorAll("input")[2] || document.querySelector("#resultLink");
+  const resultBox = document.querySelector(".result-box") || document.querySelector("#resultContainer");
 
-// Mengambil elemen tempat nampilin link di bawah "Link Video Kamu:"
-const resultInput = document.querySelector("#resultLink") || document.querySelectorAll("input")[2]; 
-const resultContainer = document.querySelector("#resultContainer") || document.querySelector(".result-box");
+  if (uploadBtn && remoteInput) {
+    uploadBtn.addEventListener("click", async () => {
+      const inputUrl = remoteInput.value.trim();
 
-if (uploadBtn && remoteInput) {
-  uploadBtn.addEventListener("click", async () => {
-    const inputUrl = remoteInput.value.trim();
-
-    if (!inputUrl) {
-      alert("Masukkan URL video mp4 terlebih dahulu!");
-      return;
-    }
-
-    uploadBtn.innerText = "Memproses...";
-    uploadBtn.disabled = true;
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoUrl: inputUrl })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Encode URL video
-        const encodedUrl = encodeURIComponent(inputUrl);
-        
-        // BIKIN LINK BERDOMAIN WEB KAMU SENDIRI
-        const myWebLink = window.location.origin + "/?v=" + encodedUrl;
-        
-        // TEMPELKAN KE KOTAK INPUT HASIL (Bawah "Link Video Kamu:")
-        if (resultInput) {
-          resultInput.value = myWebLink;
-        }
-        
-        // Tampilkan kontainer hasil jika tadinya tersembunyi
-        if (resultContainer) {
-          resultContainer.style.display = "block";
-        }
-
-        // Putar videonya di player atas
-        const mainVideo = document.getElementById("mainVideo");
-        if (mainVideo) {
-          mainVideo.src = inputUrl;
-          mainVideo.play();
-        }
-      } else {
-        alert("Gagal upload: " + (data.message || data.error || "Gagal memproses video"));
+      if (!inputUrl) {
+        alert("Masukkan URL video mp4 terlebih dahulu!");
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan koneksi ke /api/upload");
-    } finally {
-      uploadBtn.innerText = "Upload Sekarang";
-      uploadBtn.disabled = false;
-      remoteInput.value = "";
+
+      uploadBtn.innerText = "Memproses...";
+      uploadBtn.disabled = true;
+
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ videoUrl: inputUrl })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          // Buat link baru berdomain web kamu
+          const encodedUrl = encodeURIComponent(inputUrl);
+          const myWebLink = window.location.origin + "/?v=" + encodedUrl;
+
+          // Tempelkan link web kamu ke kotak hasil di bawah "Link Video Kamu:"
+          if (resultInput) {
+            resultInput.value = myWebLink;
+          }
+
+          // Munculkan kontainer teks "Berhasil dimuat!"
+          if (resultBox) {
+            resultBox.style.display = "block";
+          }
+
+          // Putar video di player utama
+          const mainVideo = document.getElementById("mainVideo");
+          if (mainVideo) {
+            mainVideo.src = inputUrl;
+            mainVideo.play();
+          }
+        } else {
+          alert("Gagal upload: " + (data.message || data.error || "Gagal memproses video"));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Terjadi kesalahan koneksi ke /api/upload");
+      } finally {
+        uploadBtn.innerText = "Upload Sekarang";
+        uploadBtn.disabled = false;
+        remoteInput.value = "";
+      }
+    });
+  }
+
+  // BACA PARAMETER LINK DARI BROWSER SAAT DIBUKA
+  const urlParams = new URLSearchParams(window.location.search);
+  const videoFromLink = urlParams.get("v");
+
+  if (videoFromLink) {
+    const mainVideo = document.getElementById("mainVideo");
+    if (mainVideo) {
+      mainVideo.src = decodeURIComponent(videoFromLink);
+      mainVideo.play();
     }
-  });
-}
+  }
+});
