@@ -53,8 +53,6 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
 
 </main>
 
-<script src="script.js"></script>
-<!-- Form Remote Upload -->
 <!-- Form Remote Upload -->
 <div style="max-width: 400px; margin: 20px auto; text-align: center;">
   <h3>Remote Upload Video</h3>
@@ -62,13 +60,15 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
   <button onclick="prosesRemoteUpload()" style="padding: 10px 20px; width: 100%;">Upload Sekarang</button>
   <p id="statusText" style="margin-top: 10px; font-weight: bold;"></p>
 
-  <!-- KOTAK UNTUK SALIN LINK (TAMBAHAN) -->
+  <!-- KOTAK UNTUK SALIN LINK -->
   <div id="resultBox" style="display: none; margin-top: 15px;">
     <p style="margin-bottom: 5px;">Link Video Kamu:</p>
     <input type="text" id="finalLinkInput" readonly style="width: 80%; padding: 8px;">
     <button onclick="copyLink()" style="padding: 8px;">Copy</button>
   </div>
 </div>
+
+<script src="script.js"></script>
  
 <script>
 function copyLink() {
@@ -80,7 +80,7 @@ function copyLink() {
 }
 
 async function prosesRemoteUpload() {
-  const videoUrl = document.getElementById('videoUrlInput').value;
+  const videoUrl = document.getElementById('videoUrlInput').value.trim();
   const statusText = document.getElementById('statusText');
   const mainVideo = document.getElementById('mainVideo');
   const resultBox = document.getElementById('resultBox');
@@ -107,8 +107,12 @@ async function prosesRemoteUpload() {
     if (data.success) {
       statusText.innerText = "Berhasil dimuat!";
       
-      // Tampilkan kotak link & isi nilainya
-      finalLinkInput.value = videoUrl;
+      // BIKIN LINK BERDOMAIN WEB KAMU SENDIRI
+      const encodedUrl = encodeURIComponent(videoUrl);
+      const myWebLink = window.location.origin + "/?v=" + encodedUrl;
+
+      // ISI KOTAK INPUT PAKAI LINK WEB KAMU
+      finalLinkInput.value = myWebLink;
       resultBox.style.display = 'block';
 
       // Update player
@@ -118,12 +122,29 @@ async function prosesRemoteUpload() {
       mainVideo.play().catch(e => console.log(e));
 
     } else {
-      statusText.innerText = "Gagal: " + data.message;
+      statusText.innerText = "Gagal: " + (data.message || "Gagal memproses");
     }
   } catch (err) {
     statusText.innerText = "Terjadi kesalahan koneksi.";
   }
 }
+
+// BUKA VIDEO OTOMATIS SAAT ORANG LAIN KLIK LINK KAMU
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const videoFromLink = urlParams.get('v');
+
+  if (videoFromLink) {
+    const mainVideo = document.getElementById('mainVideo');
+    if (mainVideo) {
+      const decodedUrl = decodeURIComponent(videoFromLink);
+      mainVideo.innerHTML = '';
+      mainVideo.src = decodedUrl;
+      mainVideo.load();
+      mainVideo.play().catch(e => console.log(e));
+    }
+  }
+});
 </script>
 
 </body>
