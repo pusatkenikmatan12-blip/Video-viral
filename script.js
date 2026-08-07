@@ -1,28 +1,41 @@
-const searchInput = document.getElementById("searchInput");
-const videoCard = document.querySelector(".video-card");
+const remoteInput = document.querySelector(".remote-upload input") || document.querySelectorAll("input")[1];
+const uploadBtn = document.querySelector(".remote-upload button") || document.querySelectorAll("button")[2];
 
-searchInput.addEventListener("keyup", () => {
+if (uploadBtn && remoteInput) {
+  uploadBtn.addEventListener("click", async () => {
+    const videoUrl = remoteInput.value.trim();
 
-const keyword = searchInput.value.toLowerCase();
-const title = videoCard.dataset.title.toLowerCase();
+    if (!videoUrl) {
+      alert("Masukkan URL video terlebih dahulu!");
+      return;
+    }
 
-if(title.includes(keyword)){
-videoCard.style.display = "block";
-}else{
-videoCard.style.display = "none";
-}
+    uploadBtn.innerText = "Processing...";
 
-});
+    try {
+      // Mengirim link luar ke API di folder /api kamu
+      const response = await fetch("/api/upload", { // Sesuaikan nama file di dalam folder /api kamu (misal /api/upload atau /api/remote)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: videoUrl })
+      });
 
-function downloadVideo(){
-  window.open(
-    "https://video-viral-swart.vercel.app", // <--- Ganti dengan domain/link web kamu
-    "_blank"
-  );
-}
+      const data = await response.json();
 
-function playAgain(){
-const video = document.getElementById("mainVideo");
-video.currentTime = 0;
-video.play();
+      if (data.success || data.link) {
+        // Tampilkan hasil link baru yang berdomain web KAMU SENDIRI
+        const newWebLink = data.link || `https://video-viral-swart.vercel.app/?v=${data.id}`;
+        
+        // Buat pop-up / alert berisi link web kamu
+        prompt("Upload Berhasil! Ini link web kamu:", newWebLink);
+      } else {
+        alert("Gagal memproses video dari API!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan saat mengubung ke API.");
+    } finally {
+      uploadBtn.innerText = "Upload Sekarang";
+    }
+  });
 }
