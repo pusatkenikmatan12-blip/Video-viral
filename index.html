@@ -66,6 +66,7 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
 async function prosesRemoteUpload() {
   const videoUrl = document.getElementById('videoUrlInput').value;
   const statusText = document.getElementById('statusText');
+  const mainVideo = document.getElementById('mainVideo');
 
   if(!videoUrl) {
     statusText.innerText = "Masukkan link video dulu!";
@@ -86,7 +87,13 @@ async function prosesRemoteUpload() {
     const data = await res.json();
 
     if (data.success) {
-      statusText.innerText = "Berhasil! Ukuran: " + data.size + " bytes";
+      statusText.innerText = "Berhasil dimuat!";
+      
+      // Mengganti video di player dan memutarnya
+      mainVideo.src = videoUrl;
+      mainVideo.load();
+      mainVideo.play();
+
     } else {
       statusText.innerText = "Gagal: " + data.message;
     }
@@ -95,6 +102,5 @@ async function prosesRemoteUpload() {
   }
 }
 </script>
-
 </body>
 </html>
