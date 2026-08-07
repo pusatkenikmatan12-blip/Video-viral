@@ -55,19 +55,36 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
 
 <script src="script.js"></script>
 <!-- Form Remote Upload -->
-<div style="max-width: 400px; margin: 20px auto; text-align: center; font-family: sans-serif;">
+<!-- Form Remote Upload -->
+<div style="max-width: 400px; margin: 20px auto; text-align: center;">
   <h3>Remote Upload Video</h3>
-  <input type="text" id="videoUrlInput" placeholder="Masukkan URL Direct Video (.mp4)" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-  <button onclick="prosesRemoteUpload()" style="padding: 8px 16px; cursor: pointer;">Upload Sekarang</button>
+  <input type="text" id="videoUrlInput" placeholder="Masukkan URL Direct Video (.mp4)" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+  <button onclick="prosesRemoteUpload()" style="padding: 10px 20px; width: 100%;">Upload Sekarang</button>
   <p id="statusText" style="margin-top: 10px; font-weight: bold;"></p>
-</div>
 
+  <!-- KOTAK UNTUK SALIN LINK (TAMBAHAN) -->
+  <div id="resultBox" style="display: none; margin-top: 15px;">
+    <p style="margin-bottom: 5px;">Link Video Kamu:</p>
+    <input type="text" id="finalLinkInput" readonly style="width: 80%; padding: 8px;">
+    <button onclick="copyLink()" style="padding: 8px;">Copy</button>
+  </div>
+</div>
  
 <script>
-  async function prosesRemoteUpload() {    const videoUrl = document.getElementById('videoUrlInput').value;async function prosesRemoteUpload() {
+function copyLink() {
+  const copyText = document.getElementById("finalLinkInput");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(copyText.value);
+  alert("Link berhasil disalin!");
+}
+
+async function prosesRemoteUpload() {
   const videoUrl = document.getElementById('videoUrlInput').value;
   const statusText = document.getElementById('statusText');
   const mainVideo = document.getElementById('mainVideo');
+  const resultBox = document.getElementById('resultBox');
+  const finalLinkInput = document.getElementById('finalLinkInput');
 
   if(!videoUrl) {
     statusText.innerText = "Masukkan link video dulu!";
@@ -90,17 +107,15 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
     if (data.success) {
       statusText.innerText = "Berhasil dimuat!";
       
-      // --- PERBAIKAN DI SINI ---
-      // Cari elemen <source> di dalam video, atau pasang src langsung
-      let sourceElement = mainVideo.querySelector('source');
-      if (sourceElement) {
-        sourceElement.src = videoUrl;
-      } else {
-        mainVideo.src = videoUrl;
-      }
-      
-      mainVideo.load(); // Reload pemutar video
-      mainVideo.play().catch(e => console.log("Autoplay diblokir browser:", e));
+      // Tampilkan kotak link & isi nilainya
+      finalLinkInput.value = videoUrl;
+      resultBox.style.display = 'block';
+
+      // Update player
+      mainVideo.innerHTML = '';
+      mainVideo.src = videoUrl;
+      mainVideo.load();
+      mainVideo.play().catch(e => console.log(e));
 
     } else {
       statusText.innerText = "Gagal: " + data.message;
@@ -110,5 +125,6 @@ poster="https://dummyimage.com/800x450/111827/ffffff&text=Websiteku"
   }
 }
 </script>
+
 </body>
 </html>
